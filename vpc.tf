@@ -89,27 +89,53 @@ resource "aws_route" "public_subnet_c" {
 }
 
 # ------------------------------
-# private subnet d
+# private subnet a
 # ------------------------------
-resource "aws_subnet" "private_subnet_d" {
+resource "aws_subnet" "private_subnet_a" {
   cidr_block = "10.0.30.0/24"
   vpc_id = aws_vpc.main.id
-  availability_zone = "ap-northeast-1d"
+  availability_zone = "ap-northeast-1a"
 
   tags = {
-    "Name" = "${local.project}-private-subnet-d"
+    "Name" = "${local.project}-private-subnet-a"
   }
 }
 
-resource "aws_route_table" "private_subnet_d" {
+resource "aws_route_table" "private_subnet_a" {
   vpc_id = aws_vpc.main.id
 
   tags = {
-    "Name" = "${local.project}-private-subnet-d"
+    "Name" = "${local.project}-private-subnet-a"
   }
 }
 
-resource "aws_route_table_association" "private_subnet_d" {
-  subnet_id = aws_subnet.private_subnet_d.id
-  route_table_id = aws_route_table.private_subnet_d.id
+resource "aws_route_table_association" "private_subnet_a" {
+  subnet_id = aws_subnet.private_subnet_a.id
+  route_table_id = aws_route_table.private_subnet_a.id
+}
+
+# ------------------------------
+# private subnet c
+# ------------------------------
+resource "aws_subnet" "private_subnet_c" {
+  cidr_block = "10.0.40.0/24"
+  vpc_id = aws_vpc.main.id
+  availability_zone = "ap-northeast-1c"
+
+  tags = {
+    "Name" = "${local.project}-private-subnet-c"
+  }
+}
+
+resource "aws_route_table" "private_subnet_c" {
+  vpc_id = aws_vpc.main.id
+
+  tags = {
+    "Name" = "${local.project}-private-subnet-c"
+  }
+}
+
+resource "aws_route_table_association" "private_subnet_c" {
+  subnet_id = aws_subnet.private_subnet_c.id
+  route_table_id = aws_route_table.private_subnet_c.id
 }
