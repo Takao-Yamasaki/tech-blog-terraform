@@ -22,7 +22,7 @@ resource "aws_route53_record" "api_validation" {
     }
   }
 
-  allow_overwrite = true
+  allow_overwrite = true  
   zone_id = aws_route53_zone.main.id
   name = each.value.name
   type = each.value.type
