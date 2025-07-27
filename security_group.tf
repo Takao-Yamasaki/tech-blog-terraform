@@ -64,7 +64,10 @@ resource "aws_security_group" "db" {
     from_port = 3306
     to_port = 3306
     protocol = "tcp"
-    security_groups = [aws_security_group.api.id]
+    security_groups = [
+      aws_security_group.api.id,
+      aws_security_group.bastion.id
+    ]
   }
 
   egress {
@@ -75,3 +78,32 @@ resource "aws_security_group" "db" {
   }
 }
 
+# ------------------------------
+# security group for bastion
+# ------------------------------
+resource "aws_security_group" "bastion" {
+  name = "${local.project}-bastion"
+  vpc_id = aws_vpc.main.id
+  
+  tags = {
+    "Name" = "${local.project}-bastion"
+  }
+
+  # FIXME: ポートを閉じる
+  ingress {
+    from_port = 22
+    to_port = 22
+    protocol = "tcp"
+    cidr_blocks = [
+      # NOTE: IP制限
+      "49.109.140.40/32"
+    ]
+  }
+
+  egress {
+    from_port = 0
+    to_port = 0
+    protocol = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}

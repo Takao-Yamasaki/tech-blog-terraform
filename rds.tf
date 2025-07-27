@@ -27,9 +27,17 @@ resource "aws_db_instance" "main" {
   publicly_accessible = false
   db_subnet_group_name = aws_db_subnet_group.main.name
   vpc_security_group_ids = [ aws_security_group.db.id ]
-
   
   # NOTE: 削除保護を無効化
   deletion_protection = false
   skip_final_snapshot = true
+
+  # ログの有効化
+  # TODO: DBへ接続して確認してみる
+  # enabled_cloudwatch_logs_exports = [
+  #   "error",
+  #   "general",
+  #   "slowquery",
+  #   "audit"
+  # ]
 }
