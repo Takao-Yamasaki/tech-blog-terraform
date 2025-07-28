@@ -23,21 +23,54 @@ resource "aws_db_instance" "main" {
   username = "techblog"
   manage_master_user_password = true
 
-  # NOTE: パブリックアクセスを無効化
+  # パブリックアクセスを無効化
   publicly_accessible = false
   db_subnet_group_name = aws_db_subnet_group.main.name
   vpc_security_group_ids = [ aws_security_group.db.id ]
   
-  # NOTE: 削除保護を無効化
+  # 削除保護を無効化
   deletion_protection = false
   skip_final_snapshot = true
 
+  # 即時反映を有効化
+  apply_immediately = true
+
   # ログの有効化
-  # TODO: DBへ接続して確認してみる
-  # enabled_cloudwatch_logs_exports = [
-  #   "error",
-  #   "general",
-  #   "slowquery",
-  #   "audit"
-  # ]
+  enabled_cloudwatch_logs_exports = [
+    "error",
+    "general",
+    "slowquery",
+    "audit"
+  ]
+
+  # DBパラメータグループ
+  parameter_group_name = aws_db_parameter_group.main.name
+}
+
+# https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/db_parameter_group
+# https://qiita.com/m-oka-system/items/a45867495f95461b0a2c
+resource "aws_db_parameter_group" "main" {
+  name = "${local.project}-db-parameter-group"
+  family = "mysql8.0"
+
+  # 一般ログ
+  parameter {
+    name = "general_log"
+    value = "1"
+    apply_method = "immediate"
+  }
+
+  # スロークエリ
+  parameter {
+    name = "slow_query_log"
+    value = "1"
+    apply_method = "immediate"
+  }
+
+  # スロークエリの閾値
+  parameter {
+    name = "long_query_time"
+    value = "1"
+    apply_method = "immediate"
+  }
 }
