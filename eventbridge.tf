@@ -1,4 +1,6 @@
-
+# ------------------------------
+# RDS
+# ------------------------------
 resource "aws_scheduler_schedule_group" "rds_auto_start_stop" {
   name = "rds_auto_start_stop"
 }
@@ -8,7 +10,7 @@ resource "aws_scheduler_schedule" "rds_auto_stop" {
   name = "rds_auto_stop"
   group_name = aws_scheduler_schedule_group.rds_auto_start_stop.name
   schedule_expression_timezone = "Asia/Tokyo"
-  schedule_expression = "cron(00 23 ? * * *)"
+  schedule_expression = "cron(00 00 ? * * *)"
 
   flexible_time_window {
     mode = "OFF"
@@ -19,6 +21,32 @@ resource "aws_scheduler_schedule" "rds_auto_stop" {
     role_arn = aws_iam_role.rds_auto_stop_role.arn
     input = jsonencode({
       "DbInstanceIdentifier": aws_db_instance.main.identifier
+    })
+  }
+}
+
+# ------------------------------
+# EC2
+# ------------------------------
+resource "aws_scheduler_schedule_group" "ec2_auto_start_stop" {
+  name = "ec2_auto_start_stop"
+}
+
+resource "aws_scheduler_schedule" "ec2_auto_stop" {
+  name = "ec2_auto_stop"
+  group_name = aws_scheduler_schedule_group.ec2_auto_start_stop.name
+  schedule_expression_timezone = "Asia/Tokyo"
+  schedule_expression = "cron(00 00 ? * * *)"
+
+  flexible_time_window {
+    mode = "OFF"
+  }
+
+  target {
+    arn = "arn:aws:scheduler:::aws-sdk:ec2:stopInstances"
+    role_arn = aws_iam_role.ec2_auto_stop_role.arn
+    input = jsonencode({
+      "InstanceIds": ["${aws_instance.bastion.id}"]
     })
   }
 }
