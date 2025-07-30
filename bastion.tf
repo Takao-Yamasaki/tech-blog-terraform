@@ -23,4 +23,13 @@ resource "aws_instance" "bastion" {
   tags = {
     Name = "${local.project}-bastion"
   }
+
+  # EC2停止時にapply対象にしない
+  # https://zenn.dev/ninomiya_hy/articles/f3437f331f0a0b
+  lifecycle {
+    ignore_changes = [ 
+      associate_public_ip_address
+    ]
+  }
 }
+
